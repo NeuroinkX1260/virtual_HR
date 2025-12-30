@@ -514,7 +514,7 @@ def sidebar_logo():
             "📤 Upload Resumes",
             "📊 Shortlist Candidates",
             "📁 Manage Databases",
-            "📩 Quick Hire"
+            "📩 Quick Hire",
             "⚙️ Settings"
         ]
     )
@@ -1160,6 +1160,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
