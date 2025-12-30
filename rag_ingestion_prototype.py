@@ -57,20 +57,26 @@ DB_TYPES = {
 PINECONE_INDEX_NAME = "resume-db"
 
 # Initialize Pinecone Client
+# Initialize Pinecone Client
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 
 # Ensure Index Exists
-existing_indexes = [i.name for i in pc.list_indexes()]
+existing_indexes = pc.list_indexes().names()
+
 if PINECONE_INDEX_NAME not in existing_indexes:
     try:
         pc.create_index(
             name=PINECONE_INDEX_NAME,
             dimension=384,
             metric="cosine",
-            spec=serverlessSpec(cloud="aws", region="us-east-1")
+            spec=ServerlessSpec(
+                cloud="aws",          # ✅ VALID CLOUD
+                region="us-east-1"    # ✅ VALID REGION
+            )
         )
     except Exception as e:
         st.error(f"Error creating Pinecone index: {e}")
+
 
 # ------------------------------------------------------------
 # INITIALIZE LOCAL METADATA STORAGE
@@ -1153,6 +1159,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
