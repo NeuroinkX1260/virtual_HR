@@ -34,7 +34,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 # --- Pinecone Imports ---
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
+
 from langchain_pinecone import PineconeVectorStore
 
 # Load environment variables
@@ -66,7 +67,7 @@ if PINECONE_INDEX_NAME not in existing_indexes:
             name=PINECONE_INDEX_NAME,
             dimension=384,
             metric="cosine",
-            spec=serverlessSpec(cloud="streamlit", region="us-east-1")
+            spec=serverlessSpec(cloud="aws", region="us-east-1")
         )
     except Exception as e:
         st.error(f"Error creating Pinecone index: {e}")
@@ -1152,6 +1153,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
