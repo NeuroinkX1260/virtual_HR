@@ -507,17 +507,46 @@ def sidebar_logo():
         unsafe_allow_html=True
     )
 
-    return st.sidebar.radio(
+    # -------- MAIN APP NAVIGATION --------
+    menu = st.sidebar.radio(
         "",
         [
             "🏠 Dashboard",
             "📤 Upload Resumes",
             "📊 Shortlist Candidates",
             "📁 Manage Databases",
-            "📩 Quick Hire",
             "⚙️ Settings"
         ]
     )
+
+    # -------- QUICK HIRE (EXTERNAL LINK) --------
+    st.sidebar.markdown(
+        """
+        <hr style="margin:12px 0;">
+        <a href="https://neuroinkx-quick-hire.netlify.app/"
+           target="_blank"
+           style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                padding:8px 12px;
+                border-radius:8px;
+                font-size:16px;
+                font-weight:600;
+                color:#1E40AF;
+                text-decoration:none;
+           "
+           onmouseover="this.style.background='#E0ECFF'"
+           onmouseout="this.style.background='transparent'"
+        >
+            📧 Quick Hire
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
+    return menu
+
 
 # PAGE 1: DASHBOARD
 # ------------------------------------------------------------
@@ -1145,21 +1174,53 @@ def render_settings_page():
 # MAIN
 # ------------------------------------------------------------
 def main():
-    st.set_page_config(page_title="Dual-DB Resume Shortlister", page_icon="🤖", layout="wide")
+    st.set_page_config(
+        page_title="NeuroInkX HR AI Platform",
+        page_icon="🤖",
+        layout="wide"
+    )
+
     load_custom_css()
     init_storage()
+
     llm = load_llm()
     embeddings = load_embeddings()
+
+    # ✅ Sidebar menu
     menu = sidebar_logo()
 
-    if menu == "🏠 Dashboard": render_dashboard_home()
-    elif menu == "📤 Upload Resumes": render_upload_page(embeddings)
-    elif menu == "📊 Shortlist Candidates": render_shortlist_page(llm, embeddings)
-    elif menu == "📁 Manage Databases": render_manage_databases_page(embeddings)
-    elif menu == "⚙️ Settings": render_settings_page()
+    # ✅ ROUTING BASED ON MENU
+    if menu == "🏠 Dashboard":
+        render_dashboard_home()
+
+    elif menu == "📤 Upload Resumes":
+        render_upload_page(embeddings)
+
+    elif menu == "📊 Shortlist Candidates":
+        render_shortlist_page(llm, embeddings)
+
+    elif menu == "📁 Manage Databases":
+        render_manage_databases_page(embeddings)
+
+    # ✅ QUICK HIRE REDIRECT (NEW TAB)
+    elif menu == "📧 Quick Hire":
+        st.markdown(
+            """
+            <script>
+                window.open("https://neuroinkx-quick-hire.netlify.app/", "_blank");
+            </script>
+            """,
+            unsafe_allow_html=True
+        )
+        st.info("🚀 Opening Quick Hire in a new tab...")
+
+    elif menu == "⚙️ Settings":
+        render_settings_page()
+
 
 if __name__ == "__main__":
     main()
+
 
 
 
