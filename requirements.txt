@@ -1,0 +1,85 @@
+# ================================
+# REQUIREMENTS for Python 3.12.5
+# ================================
+# Follow these steps if your system does NOT have the packages installed.
+
+# -------- Step 1: Verify Python Version --------
+# python --version
+# If not Python 3.12.5, download from:
+# https://www.python.org/downloads/release/python-3125/
+
+# -------- Step 2: Create Virtual Environment --------
+# python -m venv venv
+# 
+# Activate:
+#   Windows: venv\Scripts\activate
+#   macOS/Linux: source venv/bin/activate
+#
+# -------- Step 3: Install All Packages --------
+# Run this command:
+# pip install -r requirements.txt
+#
+# -------- OR Install Individually: --------
+# pip install streamlit==1.32.2 
+# pip install pandas
+# pip install numpy
+# pip install python-dotenv
+# pip install langchain
+# pip install langchain-community
+# pip install langchain-core
+# pip install langchain-groq
+# pip install langchain-huggingface
+# pip install sentence-transformers
+# pip install faiss-cpu
+# pip install plotly
+# pip install st-aggrid
+# pip install pypdf
+# pip install requests
+#pip install easyocr 
+
+# ================================
+# Actual Dependencies
+# ================================
+ #streamlit==1.32.2
+ #pandas
+ #numpy
+ #python-dotenv
+ #langchain
+ #langchain-community
+ #langchain-core
+ #langchain-groq
+ #langchain-huggingface
+ #sentence-transformers
+ #faiss-cpu
+ #plotly
+ #st-aggrid
+ #pypdf
+ #requests
+
+
+
+
+
+
+
+streamlit
+pandas
+python-dotenv
+plotly
+streamlit-aggrid
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-groq
+langchain-huggingface
+sentence-transformers
+pinecone
+langchain-pinecone
+pypdf
+pillow
+easyocr
+
+
+
+
+
