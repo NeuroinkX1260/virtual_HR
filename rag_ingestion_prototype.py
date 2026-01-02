@@ -267,6 +267,7 @@ Rules:
 2. If score >= 60 → Shortlisted else Rejected.
 3. Extract: name, surname, email, phone.
 4. also mention the tech role with respect to jd and store in the place of role of postion.
+5. also check the year of experince with the resumes according to jd and then show it will good fit or not 
 5. Return ONLY JSON.
 
 Format:
@@ -1220,6 +1221,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
