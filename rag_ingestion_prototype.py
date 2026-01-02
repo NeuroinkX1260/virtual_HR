@@ -34,7 +34,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 # --- Pinecone Imports ---
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone,ServerlessSpec
 
 from langchain_pinecone import PineconeVectorStore
 
@@ -1220,6 +1220,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
