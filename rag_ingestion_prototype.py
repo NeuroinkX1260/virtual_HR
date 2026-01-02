@@ -259,29 +259,99 @@ def load_llm():
 # ------------------------------------------------------------
 # SHORTLIST EVALUATION LOGIC
 # ------------------------------------------------------------
-SHORTLIST_PROMPT = """
-You are an expert HR AI. Evaluate the resume against the job description. 
+# SHORTLIST_PROMPT = """
+# You are an expert HR AI. Evaluate the resume against the job description. 
 
-Rules:
-1. Score from 0-100.
-2. If score >= 60 → Shortlisted else Rejected.
-3. Extract: name, surname, email, phone.
-4. also mention the tech role with respect to jd and store in the place of role of postion.
-5. also check the year of experince with the resumes according to jd and then show it will good fit or not.
-6. Return ONLY JSON.
+# Rules:
+# 1. Score from 0-100.
+# 2. If score >= 60 → Shortlisted else Rejected.
+# 3. Extract: name, surname, email, phone.
+# 4. also mention the tech role with respect to jd and store in the place of role of postion.
+# 5. also check the year of experince with the resumes according to jd and then show it will good fit or not.
+# 6. Return ONLY JSON.
 
-Format:
-{{
-  "name": "",
-  "surname": "",
-  "email": "",
-  "phone": "",
-  "score": "0",
-  "decision": "",
-  "reason": "",
-  "role of position":"",
+# Format:
+# {{
+#   "name": "",
+#   "surname": "",
+#   "email": "",
+#   "phone": "",
+#   "score": "0",
+#   "decision": "",
+#   "reason": "",
+#   "role of position":"",
   
+# }}
+
+# RESUME:
+# {resume_text}
+
+# JOB DESCRIPTION:
+# {jd}
+# """
+
+
+SHORTLIST_PROMPT = """
+You are a Senior Technical Recruiter and AI Talent Evaluator. Your task is to rigorously evaluate a candidate's RESUME against a specific JOB DESCRIPTION (JD).
+
+### ANALYSIS INSTRUCTIONS:
+
+1. **Experience Analysis (Crucial):**
+   - **Duration:** strict comparison. If JD requires X years and Resume has < X, apply a heavy penalty.
+   - **Domain Relevance:** If JD requires "FinTech" or "Healthcare" experience, check if the candidate's projects/companies align. A generic Java developer is not a match for a "Java Expert in High-Frequency Trading" role.
+
+2. **Skill Proficiency & Expertise:**
+   - **Expertise Level:** If JD asks for an "Expert" or "Senior," look for evidence of leadership, architecture design, or complex problem solving, not just listing the tool.
+   - **Core Tech Stack:** Identify the "Must-Have" languages/tools in the JD. If the resume misses the #1 priority skill (e.g., JD needs Rust, Resume only has Python), the candidate should likely be rejected or scored very low.
+
+3. **Certification Verification:**
+   - **Mandatory vs. Preferred:** If JD says "AWS Certified Solution Architect Required," check strictly for that specific string or equivalent.
+   - **Relevance:** Analyze if the candidate's certifications apply to the JD. (e.g., A "Google Analytics" cert is irrelevant for a "Backend C++ Developer" role). Do not award points for irrelevant certs.
+
+4. **Scoring Logic (0-100):**
+   - **90-100:** Perfect match (Years + Domain + Skills + Certs).
+   - **75-89:** Strong match (Minor gaps in non-critical areas).
+   - **60-74:** Potential fit (Good skills but lacks specific domain/certs, or slightly under years).
+   - **< 60:** Reject (Lacks core skills, insufficient experience, or irrelevant profile).
+
+### OUTPUT RULES:
+- Return ONLY valid JSON.
+- Do not output markdown code blocks.
+- Ensure "decision" is strictly "Shortlisted" (if Score >= 60) or "Rejected".
+
+### JSON OUTPUT FORMAT:
+{{
+  "candidate_profile": {{
+    "name": "Extract Name",
+    "surname": "Extract Surname",
+    "email": "Extract Email",
+    "phone": "Extract Phone",
+    "current_role": "Extract current/latest job title"
+  }},
+  "evaluation": {{
+    "score": 0,
+    "decision": "Shortlisted/Rejected",
+    "matching_role_title": "Best fitting title based on JD (e.g., Senior Backend Engineer)",
+    "experience_analysis": {{
+        "years_required": "From JD",
+        "years_actual": "Calculated from Resume",
+        "is_experience_sufficient": true/false,
+        "domain_relevance": "High/Medium/Low - Explanation"
+    }},
+    "skill_gap_analysis": {{
+        "missing_critical_skills": ["List skills in JD not in Resume"],
+        "aligned_skills": ["List matching skills"]
+    }},
+    "certification_check": {{
+        "required_certs_present": true/false/not_specified_in_jd,
+        "relevant_certs_found": ["List relevant certs"],
+        "notes": "Comment on relevance"
+    }},
+    "detailed_reason": "Summary of why they were shortlisted or rejected."
+  }}
 }}
+
+### DATA:
 
 RESUME:
 {resume_text}
@@ -1222,6 +1292,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
