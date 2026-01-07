@@ -357,7 +357,29 @@ RESUME:
 JD:
 {jd}
 """
+def evaluate_candidate(llm, resume_text, jd):
+    # USE THE UPDATED PROMPT ABOVE
+    prompt = ChatPromptTemplate.from_template(STRICT_SHORTLIST_PROMPT)
+    chain = prompt | llm | StrOutputParser()
+    try:
+        response = chain.invoke({"resume_text": resume_text, "jd": jd})
+        
+        # --- CLEANUP & EXTRACTION ---
+        if "```" in response:
+            response = response.replace("```json", "").replace("```", "")
+        
+        # Find JSON object
+        start = response.find("{")
+        end = response.rfind("}") + 1
+        
+        if start == -1 or end == 0:
+            return None
+            
+        cleaned = response[start:end]
+        return json.loads(cleaned)
 
+    except Exception as e:
+        return None
 
 
 
@@ -1291,6 +1313,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
