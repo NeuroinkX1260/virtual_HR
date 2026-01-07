@@ -1896,7 +1896,8 @@ You are an Advanced Technical Recruiter AI. Evaluate the Candidate against the J
     "score": 0,
     "decision": "Shortlisted/Rejected",
     "role_fit": "Exact Role Title from JD",
-    "reason": "Provide a concise explanation. For Senior roles, explicitly state 'Insufficient professional years' if rejected."
+    "reason": "Clear explanation citing experience matching JD level (e.g., 'Candidate is a final-year student with relevant Internship experience, matching the Fresher requirement')."
+
 }}
 
 ### DATA TO PROCESS:
@@ -2862,6 +2863,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
