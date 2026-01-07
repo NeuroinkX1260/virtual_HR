@@ -404,29 +404,66 @@ JD:
 
 """
 def evaluate_candidate(llm, resume_text, jd):
-    # USE THE UPDATED PROMPT ABOVE
+    """
+    FINAL SAFE EVALUATION FUNCTION
+    """
+
+    # ---------- STEP 1: HARD EXPERIENCE GATE ----------
+    required_years = extract_required_years(jd)
+    candidate_years = extract_full_time_experience(resume_text)
+
+    if required_years and candidate_years < required_years:
+        # AUTO REJECTION — NO LLM CALL
+        return {
+            "name": "",
+            "surname": "",
+            "email": "",
+            "phone": "",
+            "score": 0,
+            "decision": "Rejected",
+            "role_fit": "Unmatched Role",
+            "reason": (
+                f"JD requires {required_years}+ years of full-time experience. "
+                f"Candidate has only {candidate_years} years, which does not meet "
+                f"the Senior/Mid role requirement."
+            )
+        }
+
+    # ---------- STEP 2: LLM EVALUATION ----------
     prompt = ChatPromptTemplate.from_template(STRICT_SHORTLIST_PROMPT)
     chain = prompt | llm | StrOutputParser()
+
     try:
-        response = chain.invoke({"resume_text": resume_text, "jd": jd})
-        
-        # --- CLEANUP & EXTRACTION ---
+        response = chain.invoke({
+            "resume_text": resume_text,
+            "jd": jd
+        })
+
+        # ---------- STEP 3: ROBUST JSON EXTRACTION ----------
         if "```" in response:
             response = response.replace("```json", "").replace("```", "")
-        
-        # Find JSON object
-        start = response.find("{")
-        end = response.rfind("}") + 1
-        
-        if start == -1 or end == 0:
+
+        import re
+        match = re.search(r'\{[\s\S]*\}', response)
+        if not match:
             return None
-            
-        cleaned = response[start:end]
-        return json.loads(cleaned)
+
+        result = json.loads(match.group(0))
+
+        # ---------- STEP 4: VALIDATE REQUIRED KEYS ----------
+        required_keys = {
+            "name", "surname", "email", "phone",
+            "score", "decision", "role_fit", "reason"
+        }
+
+        if not required_keys.issubset(result.keys()):
+            return None
+
+        return result
 
     except Exception as e:
+        print("Evaluation error:", e)
         return None
-
 
 
 # ------------------------------------------------------------
@@ -1359,6 +1396,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
