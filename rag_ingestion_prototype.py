@@ -246,25 +246,7 @@ def extract_required_years(jd: str) -> int | None:
     return None
 
 
-def extract_full_time_experience(resume_text: str) -> int:
-    """
-    Very conservative experience extraction.
-    Counts only explicit full-time years.
-    """
-    matches = re.findall(r'(\d+)\s*years', resume_text.lower())
-    years = [int(m) for m in matches]
-    return max(years) if years else 0
 
-# ------------------------------------------------------------
-# LOAD LLM
-# ------------------------------------------------------------
-@st.cache_resource
-def load_llm():
-    return ChatGroq(
-        model_name="llama-3.1-8b-instant",
-        api_key=os.getenv("GROQ_API_KEY"),
-        temperature=0
-    )
 
 # ------------------------------------------------------------
 # SHORTLIST EVALUATION LOGIC
@@ -1416,6 +1398,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
