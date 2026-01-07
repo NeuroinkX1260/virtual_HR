@@ -316,92 +316,50 @@ def load_llm():
 
 
 STRICT_SHORTLIST_PROMPT = """
-You are an Advanced Technical Recruiter AI.
-You MUST strictly follow the rules below. NO EXCEPTIONS.
+You are an Advanced Technical Recruiter AI. Evaluate the Candidate against the JD.
 
-==============================
-STEP 1: DETERMINE ROLE LEVEL (MANDATORY)
-==============================
-Analyze the JD ONLY (ignore resume for this step).
+### STEP 1: DETERMINE ROLE LEVEL
+Analyze the JD to determine the seniority level:
+- **Fresher/Junior:** (0-3 years, "Intern", "Entry Level", "Junior", "Student").
+- **Senior/Mid:** (3+ years, "Senior", "Lead", "Manager").
 
-If JD mentions ANY of the following:
-- "3+ years", "4+ years", "5+ years"
-- "Senior", "Lead", "Manager", "Experienced"
+### STEP 2: EXPERIENCE CALCULATION
+- **If Fresher/Junior Role:** - COUNT Internships, Freelancing, and Capstone Projects as valid experience.
+  - DO NOT reject based on "Student" status if JD allows final-year students.
+  - If JD says "0-1 years" and candidate has 0 years but strong projects -> **SHORTLIST**.
+  
+- **If Senior/Mid Role:**
+  - COUNT ONLY full-time professional experience (exclude internships).
+  - If Candidate Years < JD Required Years -> **REJECT**.
 
-→ Role Level = **Senior/Mid**
+### STEP 3: SCORING (0-100)
+- **90-100 (Excellent):** Meets all skills + has relevant projects/internships (for freshers) or tenure (for seniors).
+- **70-89 (Good):** Meets core skills, minor gaps in experience duration.
+- **< 60 (Rejected):** Missing critical skills (e.g., Python for an ML role) or severe experience mismatch (e.g., Fresher applying for CTO).
 
-Else if JD mentions:
-- "0-1 years", "Fresher", "Intern", "Entry Level", "Junior", "Final-year students allowed"
+### OUTPUT FORMAT (Flat JSON):
+Return valid JSON only. No Markdown.
+{{
+    "name": "Extract Name",
+    "surname": "Extract Surname",
+    "email": "Extract Email",
+    "phone": "Extract Phone",
+    "score": 0,
+    "decision": "Shortlisted/Rejected",
+    "role_fit": "e.g., Junior AI Engineer",
+    "reason": "Clear explanation citing experience matching JD level (e.g., 'Candidate is a final-year student with relevant Internship experience, matching the Fresher requirement')."
+}}
 
-→ Role Level = **Fresher/Junior**
-
-🚨 Once Role Level is determined, IT CANNOT BE CHANGED.
-
-==============================
-STEP 2: EXPERIENCE VALIDATION (HARD RULES)
-==============================
-
-🔴 IF Role Level = Senior/Mid:
-- COUNT ONLY full-time professional experience.
-- IGNORE internships, freelancing, academic projects.
-- If Candidate full-time experience < JD required years:
-    → IMMEDIATE REJECTION.
-    → Score MUST be < 60.
-    → Decision MUST be "Rejected".
-
-🚫 DO NOT:
-- Convert Senior roles into Fresher roles.
-- Reward projects/internships for Senior roles.
-- Say "potential", "learning ability", or "good fresher fit".
-
-🟢 IF Role Level = Fresher/Junior:
-- COUNT internships, freelancing, capstone projects.
-- If JD allows final-year students → Student status is ACCEPTABLE.
-- Strong projects with 0 experience → SHORTLIST allowed.
-
-==============================
-STEP 3: SCORING (STRICT)
-==============================
-
-FOR Senior/Mid roles:
-- 90–100 → Meets skills + required years.
-- 70–89 → Meets skills, slightly less experience (≤1 year gap).
-- < 60 → Experience mismatch OR missing critical skills (MANDATORY REJECTION).
-
-FOR Fresher roles:
-- 70–100 → Strong projects/internships + core skills.
-- < 60 → Missing core skills.
-
-🚨 CRITICAL:
-If Senior/Mid role AND experience < required:
-- Score MUST be below 60.
-- Decision MUST be "Rejected".
-
-==============================
-STEP 4: OUTPUT (JSON ONLY)
-==============================
-Return ONLY valid JSON. No markdown. No explanations outside JSON.
-
-{
-  "name": "Extract Name",
-  "surname": "Extract Surname",
-  "email": "Extract Email",
-  "phone": "Extract Phone",
-  "score": 0,
-  "decision": "Shortlisted/Rejected",
-  "role_fit": "Derived strictly from JD",
-  "reason": "Explicitly mention experience mismatch or match based on JD role level."
-}
-
-==============================
-DATA
-==============================
+### DATA:
 RESUME:
 {resume_text}
 
 JD:
 {jd}
 """
+
+
+@164755130032361   check this one
 
 # ------------------------------------------------------------
 # CUSTOM CSS
@@ -1333,6 +1291,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
