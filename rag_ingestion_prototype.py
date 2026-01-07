@@ -234,6 +234,26 @@ def clear_database(db_type):
         index.delete(delete_all=True, namespace=db_type)
     except Exception as e:
         st.error(f"Error clearing Pinecone namespace: {e}")
+import re
+
+def extract_required_years(jd: str) -> int | None:
+    """
+    Extracts required years from JD like '4-5 years', '5+ years'
+    """
+    matches = re.findall(r'(\d+)\s*(?:\+|\-|\sto\s)?\s*\d*\s*years', jd.lower())
+    if matches:
+        return int(matches[0])
+    return None
+
+
+def extract_full_time_experience(resume_text: str) -> int:
+    """
+    Very conservative experience extraction.
+    Counts only explicit full-time years.
+    """
+    matches = re.findall(r'(\d+)\s*years', resume_text.lower())
+    years = [int(m) for m in matches]
+    return max(years) if years else 0
 
 # ------------------------------------------------------------
 # LOAD LLM
@@ -1396,6 +1416,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
